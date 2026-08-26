@@ -1,13 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
-title Build rebate_tools.spec
+title Build verge_rebate_tools.spec
 
 set "SRCDIR=%~dp0"
 set "OUTDIR=%USERPROFILE%\Downloads\GitHub"
 
 echo.
 echo  ============================================================
-echo   Building: rebate_tools.spec
+echo   Building: verge_rebate_tools.spec
 echo  ============================================================
 echo.
 
@@ -53,20 +53,20 @@ if exist "requirements.txt" (
 )
 
 REM ── Build ──
-echo  Building rebate_tools.spec...
-python -m PyInstaller "rebate_tools.spec" --noconfirm --clean --workpath "%WORKBASE%" 2>&1
+echo  Building verge_rebate_tools.spec...
+python -m PyInstaller "verge_rebate_tools.spec" --noconfirm --clean --workpath "%WORKBASE%" 2>&1
 
 if errorlevel 1 (
-    echo    FAILED: rebate_tools.spec
+    echo    FAILED: verge_rebate_tools.spec
     popd
     pause
     exit /b 1
 )
 
-echo    SUCCESS: rebate_tools.spec
+echo    SUCCESS: verge_rebate_tools.spec
 
 REM ── Copy .exe to output ──
-set "EXENAME=rebate_tools.exe"
+set "EXENAME=verge_rebate_tools.exe"
 if exist "dist\!EXENAME!" (
     if not exist "%OUTDIR%" mkdir "%OUTDIR%"
     copy /Y "dist\!EXENAME!" "%OUTDIR%\!EXENAME!" >nul
@@ -79,7 +79,7 @@ popd
 
 echo.
 echo  ============================================================
-echo   Done: rebate_tools.spec
+echo   Done: verge_rebate_tools.spec
 echo  ============================================================
 echo.
 pause

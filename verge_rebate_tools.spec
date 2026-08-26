@@ -4,14 +4,14 @@ _year = _dt.date.today().year
 
 SPEC_DOC = f"""PyInstaller spec
 Developed by Abad Umair Channa \u00a9 {_year}
-Build command: pyinstaller rebate_tools.spec
+Build command: pyinstaller verge_verge_rebate_tools.spec
 """
 
 
 block_cipher = None
 
 a = Analysis(
-    ['rebate_tools.py'],
+    ['verge_verge_rebate_tools.py'],
     pathex=['.'],
     binaries=[],
     datas=[

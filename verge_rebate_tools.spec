@@ -11,7 +11,7 @@ Build command: pyinstaller verge_verge_rebate_tools.spec
 block_cipher = None
 
 a = Analysis(
-    ['verge_verge_rebate_tools.py'],
+    ['verge_rebate_tools.py'],
     pathex=['.'],
     binaries=[],
     datas=[

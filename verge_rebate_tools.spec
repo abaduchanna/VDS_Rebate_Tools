@@ -101,7 +101,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='rebate_tools',
+    name='verge_rebate_tools',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

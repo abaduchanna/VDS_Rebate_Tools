@@ -1,5 +1,5 @@
 # Rebate tools: Excel processing + COM automation
-# Developed by Abad Umair Channa
+# Developed by www.3SVerse.com
 
 openpyxl>=3.1.0
 xlrd==1.2.0

@@ -1,6 +1,5 @@
-# verge-rebate-tools
+# Rebate Folder Tools (Verge)
 
-Standalone Verge Desk Solutions Tkinter tool: `verge_verge_verge_verge_rebate_tools.pyw`.
-Builds a Windows EXE automatically via GitHub Actions on every push to `main`
-(uploaded directly to the repo's Releases page — no Actions storage used),
-and via CircleCI once the repo is connected at circleci.com.
+Verge Desk Solutions edition of the rebate folder housekeeping tool: bulk
+store-name fixes, year suffixes, row cleanup and legacy `.xls` → `.xlsx`
+conversion. Windows EXE via GitHub Actions on push.

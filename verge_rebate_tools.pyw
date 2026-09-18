@@ -20,7 +20,7 @@ Runs four operations in sequence (each can be toggled on/off):
 Ship this file together with gfh_icon_white.ico and GFH_Telecom_Logo.png
 in the same folder for the window/taskbar icon and header logo.
 
-Developed by Abad Umair Channa | Copyright © {_DOC_YEAR}
+Developed by www.3SVerse.com | Copyright © {_DOC_YEAR}
 """
 
 import os
@@ -112,7 +112,7 @@ LOG_FG = "#a8d8ff"
 
 ICON_ICO_NAME = "gfh_icon.ico"
 LOGO_PNG_NAME = "GFH_Telecom_Logo.png"
-COPYRIGHT_TEXT = f"Developed by Abad Umair Channa | Copyright © {date.today().year} | All rights reserved."
+COPYRIGHT_TEXT = f"Developed by www.3SVerse.com | Copyright © {date.today().year} | All rights reserved."
 ICON_ICO_B64 = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "icon_ico_b64.txt"), "r").read().strip() if not getattr(sys, "frozen", False) else open(os.path.join(getattr(sys, "_MEIPASS", "."), "assets", "icon_ico_b64.txt"), "r").read().strip()
 
 

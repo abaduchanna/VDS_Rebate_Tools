@@ -714,7 +714,7 @@ class App:
         yr_row.pack(fill="x", pady=(0, 10))
         tk.Label(yr_row, text="Step 2 — Suffix to add:",
                  bg=LIGHT, fg="#8A93A0", font=("Segoe UI", 9)).pack(side="left")
-        self.suffix_var = tk.StringVar(value="2026")
+        self.suffix_var = tk.StringVar(value=str(date.today().year))  # dynamic: current year
         tk.Entry(yr_row, textvariable=self.suffix_var, width=8,
                  font=("Segoe UI", 9), relief="flat", bg="#1E2228", fg="#F5F7FA",
                  readonlybackground="#1E2228",
@@ -722,7 +722,7 @@ class App:
                  ).pack(side="left", padx=(6, 20))
         tk.Label(yr_row, text="Step 3 — Year to delete:",
                  bg=LIGHT, fg="#8A93A0", font=("Segoe UI", 9)).pack(side="left")
-        self.year_var = tk.StringVar(value="2025")
+        self.year_var = tk.StringVar(value=str(date.today().year - 1))  # dynamic: previous year
         tk.Entry(yr_row, textvariable=self.year_var, width=8,
                  font=("Segoe UI", 9), relief="flat", bg="#1E2228", fg="#F5F7FA",
                  readonlybackground="#1E2228",
@@ -954,7 +954,7 @@ class App:
                       f"{'4' if self.do_step4.get() else ''}".rstrip())
             # Read the user-supplied suffix/year values (default to 2026/2025 if blank)
             suffix = self.suffix_var.get().strip() or "2026"
-            year = self.year_var.get().strip() or "2025"
+            year = self.year_var.get().strip() or str(date.today().year - 1)
             if self.do_step2.get():
                 self._log(f"  Step 2 suffix: '{suffix}'")
             if self.do_step3.get():

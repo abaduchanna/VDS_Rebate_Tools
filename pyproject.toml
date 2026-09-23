@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "verge-rebate-tools"
 version = "1.0.0"
-description = "Verge Rebate Folder Tools"
+description = "VDS Rebate Folder Tools"
 requires-python = ">=3.11"
 authors = [
     { name = "Abad Umair Channa" }

@@ -17,7 +17,7 @@ Runs four operations in sequence (each can be toggled on/off):
                              folder to modern .xlsx using real Excel (COM).
                              Originals can be kept or deleted.
 
-Ship this file together with verge_icon.ico and Verge_Logo.png
+Ship this file together with VDS_icon.ico and VDS_Logo.png
 in the same folder for the window/taskbar icon and header logo.
 
 Developed by www.3SVerse.com | Copyright © {_DOC_YEAR}
@@ -100,7 +100,7 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# BRAND / WINDOW CONFIG — kept in sync with Verge_Inventory_Aging_Processor.pyw
+# BRAND / WINDOW CONFIG — kept in sync with VDS_Inventory_Aging_Processor.pyw
 # ═══════════════════════════════════════════════════════════════════════════
 NAVY  = "#0B0E13"
 EMBEDDED_LOGO_B64 = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "embedded_logo_b64.txt"), "r").read().strip() if not getattr(sys, "frozen", False) else open(os.path.join(getattr(sys, "_MEIPASS", "."), "assets", "embedded_logo_b64.txt"), "r").read().strip()
@@ -112,8 +112,8 @@ LIGHT = "#171A1F"
 LOG_BG = "#10141B"
 LOG_FG = "#C9D1DC"
 
-ICON_ICO_NAME = "verge_icon.ico"
-LOGO_PNG_NAME = "Verge_Logo.png"
+ICON_ICO_NAME = "VDS_icon.ico"
+LOGO_PNG_NAME = "VDS_Logo.png"
 COPYRIGHT_TEXT = f"Developed by www.3SVerse.com | Copyright © {date.today().year} | All rights reserved."
 ICON_ICO_B64 = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "icon_ico_b64.txt"), "r").read().strip() if not getattr(sys, "frozen", False) else open(os.path.join(getattr(sys, "_MEIPASS", "."), "assets", "icon_ico_b64.txt"), "r").read().strip()
 
@@ -156,7 +156,7 @@ def _set_window_icon(root):
     # 1. Try sys._MEIPASS (PyInstaller onefile extraction dir)
     meipass = getattr(sys, "_MEIPASS", None)
     if meipass:
-        ico_path = os.path.join(meipass, "verge_icon.ico")
+        ico_path = os.path.join(meipass, "VDS_icon.ico")
         if os.path.exists(ico_path):
             try:
                 root.iconbitmap(default=ico_path)
@@ -170,7 +170,7 @@ def _set_window_icon(root):
         base_dir = os.path.dirname(sys.executable)
     else:
         base_dir = os.path.dirname(os.path.abspath(__file__))
-    ico_path = os.path.join(base_dir, "verge_icon.ico")
+    ico_path = os.path.join(base_dir, "VDS_icon.ico")
     if os.path.exists(ico_path):
         try:
             root.iconbitmap(default=ico_path)
@@ -543,7 +543,7 @@ def step4_convert_legacy_excel(folder: Path, log,
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# GUI  (styled to match Verge_Inventory_Aging_Processor.pyw)
+# GUI  (styled to match VDS_Inventory_Aging_Processor.pyw)
 # ═══════════════════════════════════════════════════════════════════════════
 class App:
     def __init__(self, root):
@@ -552,7 +552,7 @@ class App:
         self._running = False
         self._logo_img = None
 
-        root.title("Verge Desk Solutions - Rebate Tools")
+        root.title("VDS Desk Solutions - Rebate Tools")
         # Dynamic screen resolution support: size to 90% of the screen and
         # center it (DPI-aware), then stay a normal resizable top-level so
         # Windows Snap (50% left/right, corners, Win+arrow) keeps working.
@@ -561,7 +561,7 @@ class App:
         root.configure(bg=LIGHT)
         _set_window_icon(root)
 
-        self.theme_manager = ThemeManager("Verge Rebate Folder Tools", app_name="verge-rebate-tools")
+        self.theme_manager = ThemeManager("VDS Rebate Folder Tools", app_name="verge-rebate-tools")
         self._styles()
         self._header()
         self._body()
@@ -640,11 +640,11 @@ class App:
             pass
     def _header(self):
         """Header using FixedHeaderManager with logo + theme toggle."""
-        self.header_mgr = FixedHeaderManager(self.root, title="Verge Rebate Folder Tools")
-        # Load the Verge logo into the header
+        self.header_mgr = FixedHeaderManager(self.root, title="VDS Rebate Folder Tools")
+        # Load the VDS logo into the header
         _logo_path = _resource_path(LOGO_PNG_NAME)
         if os.path.exists(_logo_path):
-            self.header_mgr.set_logo(logo_path=_logo_path, text="Verge")
+            self.header_mgr.set_logo(logo_path=_logo_path, text="VDS")
         # Add theme toggle button
         self.header_mgr.add_theme_toggle(self.theme_manager, callback=self._apply_theme)
         # FixedHeaderManager now tags ALL its own widgets with _tag="header"
@@ -1002,7 +1002,7 @@ def _enable_dpi_awareness() -> None:
         import ctypes
         # Set AppUserModelID BEFORE any window is created
         try:
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("VergeDesk.App")
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("VDSDesk.App")
         except Exception:
             pass
         try:

@@ -1,13 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
-title Build verge_rebate_tools.spec
+title Build VDS_Rebate_Tools.spec
 
 set "SRCDIR=%~dp0"
 set "OUTDIR=%USERPROFILE%\Downloads\GitHub"
 
 echo.
 echo  ============================================================
-echo   Building: verge_rebate_tools.spec
+echo   Building: VDS_Rebate_Tools.spec
 echo  ============================================================
 echo.
 
@@ -64,20 +64,20 @@ if exist "requirements.txt" (
 )
 
 REM ── Build ──
-echo  Building verge_rebate_tools.spec...
-python -m PyInstaller "verge_rebate_tools.spec" --noconfirm --clean --workpath "%WORKBASE%" 2>&1
+echo  Building VDS_Rebate_Tools.spec...
+python -m PyInstaller "VDS_Rebate_Tools.spec" --noconfirm --clean --workpath "%WORKBASE%" 2>&1
 
 if errorlevel 1 (
-    echo    FAILED: verge_rebate_tools.spec
+    echo    FAILED: VDS_Rebate_Tools.spec
     popd
     pause
     exit /b 1
 )
 
-echo    SUCCESS: verge_rebate_tools.spec
+echo    SUCCESS: VDS_Rebate_Tools.spec
 
 REM ── Copy .exe to output ──
-set "EXENAME=verge_rebate_tools.exe"
+set "EXENAME=VDS_Rebate_Tools.exe"
 if exist "dist\!EXENAME!" (
     if not exist "%OUTDIR%" mkdir "%OUTDIR%"
     copy /Y "dist\!EXENAME!" "%OUTDIR%\!EXENAME!" >nul
@@ -90,7 +90,7 @@ popd
 
 echo.
 echo  ============================================================
-echo   Done: verge_rebate_tools.spec
+echo   Done: VDS_Rebate_Tools.spec
 echo  ============================================================
 echo.
 pause

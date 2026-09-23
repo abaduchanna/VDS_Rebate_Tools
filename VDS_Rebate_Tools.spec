@@ -4,20 +4,20 @@ _year = _dt.date.today().year
 
 SPEC_DOC = f"""PyInstaller spec
 Developed by www.3SVerse.com \u00a9 {_year}
-Build command: pyinstaller verge_verge_rebate_tools.spec
+Build command: pyinstaller verge_VDS_Rebate_Tools.spec
 """
 
 
 block_cipher = None
 
 a = Analysis(
-    ['verge_rebate_tools.py'],
+    ['VDS_Rebate_Tools.py'],
     pathex=['.'],
     binaries=[],
     datas=[
         ('assets', 'assets'),
-        ('verge_icon.ico', '.'),
-        ('Verge_Logo.png', '.'),
+        ('VDS_icon.ico', '.'),
+        ('VDS_Logo.png', '.'),
         ('stores.json', '.'),
         ('theme_manager.py', '.'),
         ('logo_handler.py', '.'),
@@ -101,7 +101,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='verge_rebate_tools',
+    name='VDS_Rebate_Tools',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -113,5 +113,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='verge_icon.ico',
+    icon='VDS_icon.ico',
 )

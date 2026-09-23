@@ -44,7 +44,7 @@ echo    Prerequisites OK
 echo.
 
 REM ── Redirect PyInstaller workpath to system TEMP ──
-set "WORKBASE=%TEMP%\pyi_build\rebate_tools"
+set "WORKBASE=%TEMP%\pyi_build\VDS_Rebate_Tools"
 if exist "%WORKBASE%" rmdir /s /q "%WORKBASE%"
 mkdir "%WORKBASE%" 2>nul
 echo    Workpath: %WORKBASE%

@@ -183,7 +183,7 @@ def _set_window_icon(root):
     try:
         data = base64.b64decode(EMBEDDED_ICON_B64.strip())
         tmp_dir = os.environ.get("TEMP", tempfile.gettempdir())
-        ico_path = os.path.join(tmp_dir, "verge_app_icon.ico")
+        ico_path = os.path.join(tmp_dir, "VDS_app_icon.ico")
         with open(ico_path, "wb") as f:
             f.write(data)
         root.iconbitmap(default=ico_path)
@@ -402,7 +402,7 @@ def step3_delete_year_rows(folder: Path, log, year="2025"):
 
 # ═══════════════════════════════════════════════════════════════════════════
 # STEP 4 — CONVERT LEGACY EXCEL (.xls / .xlsm / .xlt / .xlsb → .xlsx)
-# Merged in from verge_xls_to_xlsx.pyw so the rebate folder can be fully
+# Merged in from VDS_Xls_To_Xlsx.pyw so the rebate folder can be fully
 # modernised in one pass. Uses real Microsoft Excel via COM so formatting,
 # formulas and data are preserved exactly.
 # ═══════════════════════════════════════════════════════════════════════════
@@ -561,7 +561,7 @@ class App:
         root.configure(bg=LIGHT)
         _set_window_icon(root)
 
-        self.theme_manager = ThemeManager("VDS Rebate Folder Tools", app_name="verge-rebate-tools")
+        self.theme_manager = ThemeManager("VDS Rebate Folder Tools", app_name="VDS-Rebate-Tools")
         self._styles()
         self._header()
         self._body()

@@ -4,7 +4,7 @@ _year = _dt.date.today().year
 
 SPEC_DOC = f"""PyInstaller spec
 Developed by www.3SVerse.com \u00a9 {_year}
-Build command: pyinstaller verge_VDS_Rebate_Tools.spec
+Build command: pyinstaller VDS_Rebate_Tools.spec
 """
 
 

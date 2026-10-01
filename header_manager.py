@@ -159,6 +159,26 @@ class FixedHeaderManager:
                     font=("Segoe UI", 16, "bold"), fill="#F5F7FA",
                     tags=("band_title",),
                 )
+            # Theme glyph as vector art directly on the textured canvas:
+            # no rectangular background (genuinely transparent over the
+            # header artwork) and an unmistakable sun/moon (Tk renders
+            # emoji as flat monochrome outlines).
+            canvas.delete("theme_toggle")
+            toggle_action = getattr(self, "_theme_toggle_action", None)
+            if width > 2 and height > 2 and toggle_action:
+                from theme_manager import draw_theme_glyph
+                tm = getattr(self, "theme_manager", None)
+                draw_theme_glyph(
+                    canvas, width - 32, height / 2,
+                    "dark" if (tm is None or tm.current_theme == "dark") else "light",
+                    tags=("theme_toggle",),
+                )
+                canvas.tag_bind("theme_toggle", "<Button-1>",
+                                lambda _event: toggle_action())
+                canvas.tag_bind("theme_toggle", "<Enter>",
+                                lambda _event: canvas.configure(cursor="hand2"))
+                canvas.tag_bind("theme_toggle", "<Leave>",
+                                lambda _event: canvas.configure(cursor=""))
         except Exception:
             pass
     
@@ -193,18 +213,31 @@ class FixedHeaderManager:
                 callback()
         
         colors = theme_manager.get_colors()
-        
+
+        # Preferred path: render the clickable glyph as a canvas item so
+        # the header texture stays visible with no opaque square behind it.
+        if getattr(self, "texture_canvas", None) is not None:
+            self.theme_toggle_btn = None
+            self._theme_toggle_action = toggle_and_callback
+            self._theme_toggle_text = (
+                "\u2600" if theme_manager.current_theme == "dark" else "\u263e"
+            )
+            self._repaint_band()
+            return
+
         self.theme_toggle_btn = tk.Button(
             self.right_frame,
-            text="☀️" if theme_manager.current_theme == "dark" else "🌙",
+            text="\u2600" if theme_manager.current_theme == "dark" else "\u263e",
             command=toggle_and_callback,
             bg=self.BRAND_NAVY,
             fg="white",
-            activebackground=self.BRAND_RED,
+            # Blend with the header in normal, hover and pressed states
+            # (parent-matching navy = Tkinter's transparency).
+            activebackground=self.BRAND_NAVY,
             activeforeground="white",
             relief=tk.FLAT,
             width=3,
-            font=("Segoe UI Emoji", 13),
+            font=("Segoe UI Symbol", 13),
             cursor="hand2",
             highlightthickness=0,
             borderwidth=0
@@ -292,10 +325,13 @@ class FixedHeaderManager:
     
     def update_button_text(self):
         """Update toggle button text ONLY - never change header colors."""
-        if self.theme_toggle_btn and self.theme_manager:
-            new_text = "🌙" if self.theme_manager.current_theme == "light" else "☀️"
-            self.theme_toggle_btn.configure(text=new_text)
-        
+        if self.theme_manager:
+            new_text = "\u2600" if self.theme_manager.current_theme == "dark" else "\u263e"
+            self._theme_toggle_text = new_text
+            if self.theme_toggle_btn:
+                self.theme_toggle_btn.configure(text=new_text)
+            self._repaint_band()
+
         if self.copyright_label and self.theme_manager:
             new_text = self.theme_manager.get_copyright_text()
             self.copyright_label.configure(text=new_text)

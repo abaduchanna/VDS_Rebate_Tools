@@ -597,18 +597,23 @@ class App:
     # ── styles ─────────────────────────────────────────────────────────────
     def _styles(self):
         s = ttk.Style(); s.theme_use("clam")
-        s.configure("Run.TButton", background=RED, foreground=WHITE,
+        c = self.theme_manager.get_colors()
+        hover = "#2C5FE3"
+        s.configure("Run.TButton", background=hover, foreground=WHITE,
                     font=("Segoe UI", 11, "bold"), padding=(16, 9), borderwidth=0)
         s.map("Run.TButton",
-              background=[("active", "#c01820"), ("disabled", "#aaa")])
-        s.configure("Browse.TButton", background="#1E2228", foreground=WHITE,
+              background=[("active", hover), ("pressed", "#2148B6"),
+                          ("disabled", c["panel_alt"])],
+              foreground=[("active", WHITE), ("disabled", c["text_dim"])])
+        s.configure("Browse.TButton", background=c["panel_alt"], foreground=c["text"],
                     font=("Segoe UI", 10), padding=(10, 6), borderwidth=0)
-        s.map("Browse.TButton", background=[("active", "#171A1F")])
-        s.configure("Cancel.TButton", background="#171A1F", foreground=WHITE,
+        s.map("Browse.TButton", background=[("active", hover)], foreground=[("active", WHITE)])
+        s.configure("Cancel.TButton", background=c["panel_alt"], foreground=c["text"],
                     font=("Segoe UI", 10), padding=(10, 6), borderwidth=0)
-        s.map("Cancel.TButton", background=[("active", "#2A2C31")])
+        s.map("Cancel.TButton", background=[("active", hover), ("disabled", c["panel_alt"])],
+              foreground=[("active", WHITE), ("disabled", c["text_dim"])])
         s.configure("Accent.Horizontal.TProgressbar",
-                    troughcolor="#1E2228", background=RED, borderwidth=0)
+                    troughcolor=c["panel_alt"], background=hover, borderwidth=0)
 
     # ── header (matches Aging Processor: NAVY 108px, logo left, title center) ──
 
@@ -669,6 +674,7 @@ class App:
         #   - Labelframe (was previously missed → panels stayed white)
         #   - Checkbutton/Radiobutton selectcolor
         self.theme_manager.apply_theme_to_window(self.root)
+        self._styles()
         # Refresh header toggle button text in case theme changed
         if hasattr(self.header_mgr, 'update_button_text'):
             self.header_mgr.update_button_text()
@@ -827,8 +833,11 @@ class App:
     def _copyright_bar(self):
         bar = tk.Frame(self.root, bg=NAVY, height=26)
         bar.pack(fill="x", side="bottom"); bar.pack_propagate(False)
-        tk.Label(bar, text=COPYRIGHT_TEXT, bg=NAVY, fg="#8A93A0",
-                 font=("Segoe UI", 8)).pack(pady=4)
+        bar._tag = "footer"
+        label = tk.Label(bar, text=COPYRIGHT_TEXT, bg=NAVY, fg="#8A93A0",
+                         font=("Segoe UI", 8))
+        label.pack(pady=4)
+        label._tag = "footer"
 
     # ── helpers ────────────────────────────────────────────────────────────
     def _browse(self):

@@ -46,6 +46,11 @@ from datetime import datetime, date
 import base64
 import tempfile
 
+# --- 3SVerse runtime tamper guard (t197): frozen EXE main debugger = silent exit ---
+import runtime_guard as _rguard3sv
+
+_rguard3sv.enforce()
+
 # ── Auto-install required packages BEFORE importing them ──────────────────
 def _pip_install(pkg_name):
     # Never pip-install from inside a frozen EXE: all deps are bundled by

@@ -46,6 +46,11 @@ from datetime import datetime, date
 import base64
 import tempfile
 
+# --- 3SVerse license gate (AI-copy protection retrofit t192) ---
+import license_core as _lic3sv
+if not _lic3sv.ensure_licensed():
+    raise SystemExit(0)
+
 # ── Auto-install required packages BEFORE importing them ──────────────────
 def _pip_install(pkg_name):
     # Never pip-install from inside a frozen EXE: all deps are bundled by

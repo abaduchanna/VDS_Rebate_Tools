@@ -64,23 +64,6 @@ def _pip_install(pkg_name):
         capture_output=True,
     )
 
-# Check each dependency by its real import module name (pywin32 -> win32com,
-# pillow -> PIL), not the pip package name, so this only runs pip when a
-# package is genuinely missing.
-for _mod, _pip in [
-    ("openpyxl",  "openpyxl"),
-    ("xlrd",      "xlrd==1.2.0"),
-    ("xlwt",      "xlwt"),
-    ("xlutils",   "xlutils"),
-    ("win32com",  "pywin32"),
-    ("PIL",       "pillow"),
-]:
-    try:
-        __import__(_mod)
-    except ImportError:
-        _pip_install(_pip)
-
-# ── Now import after ensuring packages are installed ──────────────────────
 try:
     from openpyxl import load_workbook as _load_xlsx
 except ImportError:
@@ -868,13 +851,19 @@ class App:
         self.log_box.pack(fill="both", expand=True)
 
     def _copyright_bar(self):
+        # Keep a single footer if the UI is rebuilt on the existing root.
+        for child in self.root.winfo_children():
+            if getattr(child, "_tag", None) == "footer":
+                child.destroy()
         bar = tk.Frame(self.root, bg=NAVY, height=26)
         bar.pack(fill="x", side="bottom"); bar.pack_propagate(False)
         bar._tag = "footer"
-        label = tk.Label(bar, text=COPYRIGHT_TEXT, bg=NAVY, fg="#8A93A0",
+        self.footer_frame = bar
+        label = tk.Label(bar, text=COPYRIGHT_TEXT, bg=NAVY, fg="#C9D1DC",
                          font=("Segoe UI", 8))
         label.pack(pady=4)
         label._tag = "footer"
+        self.footer_label = label
 
     # ── helpers ────────────────────────────────────────────────────────────
     def _browse(self):
@@ -1085,3 +1074,7 @@ if __name__ == "__main__":
             _mb.showerror("Fatal Error", traceback.format_exc())
         except Exception:
             pass
+
+
+if __name__ == "__main__":
+    main()

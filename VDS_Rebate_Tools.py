@@ -570,11 +570,32 @@ class App:
         _set_window_icon(root)
 
         self.theme_manager = ThemeManager("VDS Rebate Folder Tools", app_name="VDS-Rebate-Tools")
-        self._styles()
-        self._header()
-        self._body()
-        self._copyright_bar()
-        apply_theme_to_window(self.root, self.theme_manager)
+        # ── FIX (TypeError: 'NoneType' object is not callable) ────────────────
+        # Each init step is guarded: a None callback inside a step used to kill
+        # the whole app with a cryptic traceback from __init__. Now a failing
+        # step logs its name + full traceback to stderr but the window still
+        # comes up, so the real culprit is visible without losing the app.
+        for _name, _fn in (
+            ("styles", self._styles),
+            ("header", self._header),
+            ("body", self._body),
+            ("copyright_bar", self._copyright_bar),
+        ):
+            try:
+                _fn()
+            except TypeError as _exc:
+                if "NoneType" in str(_exc):
+                    import traceback as _tb
+                    print(f"[VDS-Rebate-Tools] init step '{_name}' hit a None "
+                          f"callback (app continues):\n{_tb.format_exc()}",
+                          file=sys.stderr)
+                else:
+                    raise
+        try:
+            apply_theme_to_window(self.root, self.theme_manager)
+        except TypeError as _exc:
+            if "NoneType" not in str(_exc):
+                raise
         self._poll()
 
     def _apply_dynamic_geometry(self) -> None:
@@ -1075,6 +1096,8 @@ if __name__ == "__main__":
         except Exception:
             pass
 
-
-if __name__ == "__main__":
-    main()
+# NOTE: the old trailing block `if __name__ == "__main__": main()` was REMOVED —
+# no main() exists in this file, and under the vxrun1 protected launcher that
+# call resolved `main` to None and crashed with:
+#   TypeError: 'NoneType' object is not callable  (VDS_Rebate_Tools.py line 1081)
+# The guarded Tk block above is the only entry point.

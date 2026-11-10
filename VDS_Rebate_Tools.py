@@ -1069,6 +1069,33 @@ def _enable_dpi_awareness() -> None:
         pass
 
 
+def _vp_hide(win):
+    """ANTI-FLASH: keep the window fully transparent while the UI is built, so a
+    half-built window never flashes behind the boot splash."""
+    try:
+        win.attributes("-alpha", 0.0)
+    except Exception:
+        pass
+    try:
+        import pyi_splash  # type: ignore
+        pyi_splash.update_text("Loading interface...")
+    except Exception:
+        pass
+
+
+def _vp_reveal(win):
+    """Show the finished window in one step (called just before the splash closes)."""
+    try:
+        win.update_idletasks()
+    except Exception:
+        pass
+    try:
+        win.attributes("-alpha", 1.0)
+        win.lift()
+    except Exception:
+        pass
+
+
 def _close_pyi_splash():
     """Close the PyInstaller splash screen (frozen onefile builds only).
 
@@ -1085,7 +1112,9 @@ if __name__ == "__main__":
     _enable_dpi_awareness()
     try:
         root = tk.Tk()
+        _vp_hide(root)
         App(root)
+        _vp_reveal(root)
         _close_pyi_splash()
         root.mainloop()
     except Exception:

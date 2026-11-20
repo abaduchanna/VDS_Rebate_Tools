@@ -52,18 +52,136 @@ import runtime_guard as _rguard3sv
 _rguard3sv.enforce()
 
 # ── Auto-install required packages BEFORE importing them ──────────────────
-def _pip_install(pkg_name):
-    # Never pip-install from inside a frozen EXE: all deps are bundled by
-    # PyInstaller, and re-launching sys.executable would spawn another
-    # instance of the app itself (window flooding).
-    if getattr(sys, "frozen", False):
-        return
-    subprocess.run(
-        [sys.executable, "-m", "pip", "install", pkg_name,
-         "--quiet", "--disable-pip-version-check"],
-        capture_output=True,
-    )
+def _bootstrap_packages(packages, app_title):
+    """Install any missing startup package with a LIVE splash loading bar.
 
+    Same pattern as GFH Inventory Audit: collect missing packages first,
+    then show a small tk splash whose bar fills as each package installs,
+    so the user sees live progress instead of a silent freeze. No-op when
+    everything is present (always the case inside a frozen EXE — deps are
+    bundled by PyInstaller, and re-launching sys.executable would spawn
+    another instance of the app itself, i.e. window flooding).
+    """
+    if getattr(sys, "frozen", False):
+        return True
+    missing = []
+    for _imp, _pip in packages:
+        try:
+            __import__(_imp)
+        except Exception:
+            missing.append(_pip)
+    if not missing:
+        return True
+
+    try:
+        import tkinter as _tk
+        from tkinter import ttk as _ttk
+        _splash = _tk.Tk()
+        _splash.title(app_title + " — Installing packages…")
+        _splash.geometry("560x150")
+        _splash.resizable(False, False)
+        try:
+            _splash.configure(bg="#0B0E13")
+        except Exception:
+            pass
+        _splash_lbl = _tk.Label(
+            _splash,
+            text=f"Installing: {missing[0]} (1/{len(missing)})\n"
+                 "Please wait — this runs once only…",
+            font=("Segoe UI", 11), pady=12, bg="#0B0E13", fg="#FFFFFF",
+        )
+        _splash_lbl.pack()
+        _splash_bar = _ttk.Progressbar(
+            _splash, orient="horizontal", length=500,
+            mode="determinate", maximum=100, value=0,
+        )
+        _splash_bar.pack(pady=(0, 12))
+        _splash.update()
+    except Exception:
+        _splash = None
+
+    def _splash_step(done, total, name):
+        """Live splash update — fill the loading bar, refresh the label."""
+        if _splash is None:
+            return
+        try:
+            _splash_lbl.config(
+                text=f"Installing: {name} ({done}/{total})\n"
+                     "Please wait — this runs once only…")
+            _splash_bar.config(value=round(done / total * 100, 1))
+            _splash.update()
+        except Exception:
+            pass
+
+    import subprocess as _sp
+    installer_bases = [
+        [sys.executable, "-m", "pip", "install", "--quiet"],
+        ["py", "-m", "pip", "install", "--quiet"],
+        ["python", "-m", "pip", "install", "--quiet"],
+        ["python3", "-m", "pip", "install", "--quiet"],
+        ["pip", "install", "--quiet"],
+        ["pip3", "install", "--quiet"],
+    ]
+    success = True
+    _total = len(missing)
+    for _i, _pkg in enumerate(missing):
+        _splash_step(_i, _total, _pkg)
+        _ok = False
+        for _base in installer_bases:
+            try:
+                _r = _sp.run(_base + [_pkg], capture_output=True, timeout=240)
+                if _r.returncode == 0:
+                    _ok = True
+                    break
+            except Exception:
+                continue
+        if not _ok:
+            success = False
+            break
+        _splash_step(_i + 1, _total, _pkg)
+
+    if _splash:
+        try:
+            _splash_lbl.config(
+                text="All packages installed — starting the app…"
+                if success
+                else "Package install failed — showing details…")
+            if success:
+                _splash_bar.config(value=100)
+            _splash.update()
+            _splash.after(700 if success else 1200, _splash.destroy)
+            _splash.mainloop()
+        except Exception:
+            pass
+
+    if not success:
+        try:
+            import tkinter.messagebox as _mb
+            _r2 = _tk.Tk(); _r2.withdraw()
+            _mb.showerror(
+                "Install failed",
+                f"Could not auto-install: {', '.join(missing)}\n\n"
+                "Please run manually in a Command Prompt:\n\n"
+                f"    py -m pip install {' '.join(missing)}",
+            )
+            _r2.destroy()
+        except Exception:
+            pass
+    return success
+
+# Check each dependency by its real import module name (pywin32 -> win32com,
+# pillow -> PIL), not the pip package name, so this only runs pip when a
+# package is genuinely missing.
+_bootstrap_packages([
+    ("openpyxl",  "openpyxl"),
+    ("xlrd",      "xlrd==1.2.0"),
+    ("xlwt",      "xlwt"),
+    ("xlutils",   "xlutils"),
+    ("win32com",  "pywin32"),
+    ("PIL",       "pillow"),
+], "VDS Rebate Tools")
+
+# ── Now import after ensuring packages are installed ──────────────────────
 try:
     from openpyxl import load_workbook as _load_xlsx
 except ImportError:

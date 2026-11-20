@@ -96,42 +96,49 @@ def test_band_texture_wired_into_bands():
 
 
 def test_app_scripts_use_splash_colors():
-    apps = [p for p in glob.glob(os.path.join(ROOT, "VDS_*.py"))]
-    assert len(apps) == 1, f"expected exactly one app script, found {apps}"
-    src = open(apps[0], encoding="utf-8").read()
+    # The repo now ships a Tk build AND a Qt build (VDS_Rebate_Tools_Qt.py);
+    # exact palette constants stay pinned on the main Tk script, while every
+    # app script must avoid the legacy palette and fg=NAVY.
+    apps = sorted(glob.glob(os.path.join(ROOT, "VDS_*.py")))
+    assert apps, "no VDS_*.py app script found"
+    src = _read("VDS_Rebate_Tools.py")
     assert 'NAVY  = "#0B0E13"' in src or re.search(r'NAVY\s*=\s*"#0B0E13"', src)
     assert re.search(r'RED\s*=\s*"#2C5FE3"', src)
     assert re.search(r'LIGHT\s*=\s*"#171A1F"', src)
     assert '"#10141B"' in src and '"#C9D1DC"' in src
-    for legacy in ("#10182e", "#a8d8ff", "#1a2550", "#2a3560", "#dde6f0",
-                   "#e8eff8", "#b0c4de", "#4a6080", "#9d9db8", "#16213a"):
-        assert legacy not in src, f"legacy color {legacy} survived in app script"
-    assert "fg=NAVY" not in src, "fg=NAVY would be unreadable on dark surfaces"
+    for path in apps:
+        src = open(path, encoding="utf-8").read()
+        name = os.path.basename(path)
+        for legacy in ("#10182e", "#a8d8ff", "#1a2550", "#2a3560", "#dde6f0",
+                       "#e8eff8", "#b0c4de", "#4a6080", "#9d9db8", "#16213a"):
+            assert legacy not in src, f"{name}: legacy color {legacy} survived"
+        assert "fg=NAVY" not in src, f"{name}: fg=NAVY would be unreadable on dark surfaces"
 
 
 def test_app_scripts_still_import_clean():
     """The typing-import class of bug: module-level NameError must not return."""
     import builtins
-    apps = glob.glob(os.path.join(ROOT, "VDS_*.py"))
-    tree = ast.parse(open(apps[0], encoding="utf-8").read())
-    defined = set(dir(builtins)) | {"__file__", "__name__", "__doc__"}
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            defined |= {(a.asname or a.name).split(".")[0] for a in node.names}
-        elif isinstance(node, ast.ImportFrom):
-            defined |= {(a.asname or a.name) for a in node.names if a.name != "*"}
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            defined.add(node.name)
-        elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
-            defined.add(node.id)
-        elif isinstance(node, ast.arg):
-            defined.add(node.arg)
-        elif isinstance(node, ast.ExceptHandler) and node.name:
-            defined.add(node.name)
-    used = {n.id for n in ast.walk(tree)
-            if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)}
-    missing = sorted(used - defined)
-    assert not missing, f"names used but never defined/imported: {missing}"
+    apps = sorted(glob.glob(os.path.join(ROOT, "VDS_*.py")))
+    for app in apps:
+        tree = ast.parse(open(app, encoding="utf-8").read())
+        defined = set(dir(builtins)) | {"__file__", "__name__", "__doc__"}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                defined |= {(a.asname or a.name).split(".")[0] for a in node.names}
+            elif isinstance(node, ast.ImportFrom):
+                defined |= {(a.asname or a.name) for a in node.names if a.name != "*"}
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                defined.add(node.name)
+            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                defined.add(node.id)
+            elif isinstance(node, ast.arg):
+                defined.add(node.arg)
+            elif isinstance(node, ast.ExceptHandler) and node.name:
+                defined.add(node.name)
+        used = {n.id for n in ast.walk(tree)
+                if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)}
+        missing = sorted(used - defined)
+        assert not missing, f"{os.path.basename(app)}: names used but never defined/imported: {missing}"
 
 
 def test_band_canvas_never_hijacks_lift_and_has_failsafe():

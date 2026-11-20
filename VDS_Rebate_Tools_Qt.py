@@ -598,7 +598,7 @@ class MainWindow(QMainWindow):
         body_layout.addWidget(QLabel("Activity Log"))
         self.log_box = QPlainTextEdit()
         self.log_box.setReadOnly(True)
-        self.log_box.setStyleSheet("background: #10182e; color: #a8d8ff; font-family: Consolas;")
+        self.log_box.setStyleSheet("font-family: Consolas;")  # theme colors set in _apply_theme()
         body_layout.addWidget(self.log_box, 1)
 
         self.header_mgr.add_copyright(self.theme_manager, outer)
